@@ -24,6 +24,6 @@ export const request = async ({ url, method, body, headers, ...others }) => {
   try {
     return await res.json();
   } catch (err) {
-    console.err(err);
+    console.log(err);
   }
 };

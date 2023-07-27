@@ -1,13 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import AdminSetting from './AdminSetting';
 import App from './App';
+import Login from './Login'
 import reportWebVitals from './reportWebVitals';
-
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+    <Routes>
+      <Route exact path='/' Component={App}/>
+      <Route exact path='/login' Component={Login}/>
+      <Route exact path='/admin-setting' Component={AdminSetting}/>
+    </Routes>
+    </BrowserRouter>
   </React.StrictMode>
 );
 

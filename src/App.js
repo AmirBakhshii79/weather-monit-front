@@ -4,11 +4,13 @@ import "react-leaflet";
 import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
 import { request } from "./utils/request";
 import { historyUrl, sensorUrl } from "./utils/urls";
-import { Slider, Typography } from "antd";
+import { Button, Slider, Typography } from "antd";
 import { Header } from "antd/es/layout/layout";
+import { render } from "@testing-library/react";
+import { useNavigate } from "react-router-dom";
+import Link from "antd/es/typography/Link";
 
 const { Text } = Typography;
-
 const MarkerSpot = (props) => {
   const { Data: data = {}, Lat: lat, Long: long } = props;
   const [selectedDataAccordingToTime, setSelectedDataAccordingToTime] =
@@ -91,34 +93,37 @@ const SensorHistory = (props) => {
   return (
     <div>
       <div
+        dir="rtl"
         style={{
           fontSize: "20px",
-          fontWeight: "bolder",
-          textAlign: "start",
+          fontWeight: "bold",
+          textAlign: "center",
           marginTop: "40px",
           marginBottom: "12px",
+          borderTop: "1px solid #cccccc",
+
         }}
       >
-        دریافت اطلاعات آب و هوا بر اساس تاریخ:
+        دریافت اطلاعات آب و هوا بر اساس تاریخ
       </div>
       <div
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, 140px)",
-          border: "3px solid",
-          columnGap: "12px",
+          columnGap: "10px",
+          width: '100%'
         }}
       >
         {past30Days.map((time) => (
-          <a
+          <Link
             key={time.displayDate}
-            style={{ border: "1px dashed ", cursor: "crosshair" }}
+            style={{ border: "1px ", cursor: "crosshair" }}
             target="_blank"
             rel="noreferrer"
             href={time.csvUrl}
           >
             {time.displayDate}
-          </a>
+          </Link>
         ))}
       </div>
     </div>
@@ -127,6 +132,11 @@ const SensorHistory = (props) => {
 
 function App() {
   const [sensor, setSensor] = useState([]);
+  const Navigate = useNavigate()
+
+  const doLogin = () => {
+    Navigate('/login')
+  }
 
   const hamadanLocation = [34.80302185623945, 48.50722400106659];
 
@@ -153,6 +163,7 @@ function App() {
             alignItems: "center",
           }}
         >
+          <Button onClick={doLogin}>ورود به سیستم</Button>
           <Text style={{ color: "white" }}>
             سیستم اطلاعات آب و هوا دانشگاه بوعلی سینا
           </Text>
