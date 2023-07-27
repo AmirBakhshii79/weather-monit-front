@@ -110,6 +110,27 @@ function AdminSetting() {
     />
     </div>
   
+    <div>
+        <List
+      size="small"
+      header={<div dir='rtl'>نشان دادن اطلاعات مقادیر</div>}
+      bordered
+      dataSource={settings.features}
+      renderItem={(item) => 
+      <List.Item>
+      {item.feature} 
+      <Checkbox defaultChecked={item.enabled}
+      onChange={(e) => {
+        let d = settings.features.findIndex(x => x.feature == item.feature)
+        settings.features[d].enabled = e.target.checked
+        setSettings(settings)
+      }}
+      />
+      </List.Item>
+      }
+      style={{margin:"20px"}}
+    />
+    </div>
   
     <Button onClick={saveSettings} style={{backgroundColor: '#00caca', margin: '10px'}}>ذخیره اطلاعات</Button>
     <Button onClick={() => Navigate('/')}>بازگشت به صفحه اصلی</Button>

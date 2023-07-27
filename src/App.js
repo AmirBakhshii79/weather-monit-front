@@ -9,6 +9,9 @@ import { Header } from "antd/es/layout/layout";
 import { render } from "@testing-library/react";
 import { useNavigate } from "react-router-dom";
 import Link from "antd/es/typography/Link";
+import { Chart as ChartJS, Tooltip, Legend, CategoryScale, LinearScale, PointElement, Title, LineElement } from "chart.js";
+import { Line } from "react-chartjs-2";
+
 
 const { Text } = Typography;
 const MarkerSpot = (props) => {
@@ -56,6 +59,7 @@ const MarkerSpot = (props) => {
                 ) : (
                   ""
                 )}
+
               </div>
             ))}
           </div>
@@ -132,6 +136,10 @@ const SensorHistory = (props) => {
 
 function App() {
   const [sensor, setSensor] = useState([]);
+  
+  const [chartLabels, setChartLabels] = useState([])
+  const [chartData, setChartData] = useState([])
+
   const Navigate = useNavigate()
 
   const doLogin = () => {
@@ -146,11 +154,84 @@ function App() {
     });
     if (!res) return;
     setSensor(res);
+    setChart(res)
   };
 
   useEffect(() => {
     getSensor();
   }, []);
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
+
+  function setChart(rawData) {
+    let labels = Object.keys(rawData[0].Data).slice(Object.keys(rawData[0].Data).length - 30)
+    setChartLabels(labels)
+  
+    let totalFeatures = []
+    Object.keys(rawData[0].Data).forEach(k => {
+      rawData[0].Data[k].forEach(f => {
+        if (totalFeatures.find(x => x == f.feature) == null) {
+          totalFeatures.push(f.feature)
+        }
+      })
+    })
+
+    let featureData = []
+    totalFeatures.forEach(feature => {
+      let pointData = []
+      Object.keys(rawData[0].Data).slice(Object.keys(rawData[0].Data).length - 30).forEach(k => {
+          let fdata = rawData[0].Data[k].find(f => f.feature == feature)
+          if (fdata == undefined)
+            return pointData.push(0)
+
+          pointData.push(fdata.amount)
+        })
+        let color = getRandomColor()
+        featureData.push({
+          label: feature,
+          data: pointData,
+          backgroundColor: color,
+          borderColor: color,
+          hidden: true
+        })
+      })
+
+      console.log(featureData)
+      setChartData(featureData)
+  }
+
+  const getRandomColor = () => {
+    const colToHex = (c) => {
+      // Hack so colors are bright enough
+      let color = (c < 75) ? c + 75 : c
+      let hex = color.toString(16);
+      return hex.length == 1 ? "0" + hex : hex;
+      }
+
+    const rgbToHex = (r,g,b) => {
+      return "#" + colToHex(r) + colToHex(g) + colToHex(b);
+      }
+
+    return rgbToHex(
+     Math.floor(Math.random() * 255),
+     Math.floor(Math.random() * 255),
+     Math.floor(Math.random() * 255));
+    }
+
+  const data = {
+  labels: chartLabels,
+  datasets: chartData
+};
+
 
   return (
     <div className="App">
@@ -193,6 +274,21 @@ function App() {
           </MapContainer>
         </div>
       </div>
+      <div
+        dir="rtl"
+        style={{
+          fontSize: "20px",
+          fontWeight: "bold",
+          textAlign: "center",
+          marginTop: "40px",
+          marginBottom: "12px",
+          borderTop: "1px solid #cccccc",
+
+        }}
+      >
+        مقایسه اطلاعات آب و هوا
+      </div>
+      <Line data={data}/>
       <SensorHistory />
     </div>
   );
