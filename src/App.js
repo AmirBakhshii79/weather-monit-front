@@ -4,10 +4,10 @@ import "react-leaflet";
 import { MapContainer, TileLayer, Popup, Marker } from "react-leaflet";
 import { request } from "./utils/request";
 import { historyUrl, sensorUrl } from "./utils/urls";
-import { Button, Slider, Typography } from "antd";
-import { Header } from "antd/es/layout/layout";
+import { Button, DatePicker, Slider, Typography } from "antd";
+import { Footer, Header } from "antd/es/layout/layout";
 import { render } from "@testing-library/react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Link from "antd/es/typography/Link";
 import { Chart as ChartJS, Tooltip, Legend, CategoryScale, LinearScale, PointElement, Title, LineElement } from "chart.js";
 import { Line } from "react-chartjs-2";
@@ -36,8 +36,13 @@ const MarkerSpot = (props) => {
   }, []);
 
   return (
-    <Marker position={[long, lat]}>
-      <Popup>
+    <Marker position={[long, lat]} eventHandlers={{
+      click: (e) => {
+        props.onClick(props)
+      },
+    }}
+    >
+      <Popup >
         <div>
           <div>
             {selectedDataAccordingToTime?.map((time) => (
@@ -83,9 +88,10 @@ const MarkerSpot = (props) => {
 const SensorHistory = (props) => {
   const today = new Date();
   const past30Days = [];
+  const [selectedTime, setSelectedTime] = useState(Date.now())
 
   // Loop through the past 30 days and add them to the array
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 7; i++) {
     const day = new Date(today);
     day.setDate(today.getDate() - i);
     past30Days.push({
@@ -112,16 +118,16 @@ const SensorHistory = (props) => {
       </div>
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, 140px)",
-          columnGap: "10px",
+          display: "flex",
+          justifyContent: "center",
+          gap: "30px",
           width: '100%'
         }}
       >
         {past30Days.map((time) => (
           <Link
             key={time.displayDate}
-            style={{ border: "1px ", cursor: "crosshair" }}
+            style={{ border: "1px " }}
             target="_blank"
             rel="noreferrer"
             href={time.csvUrl}
@@ -130,6 +136,37 @@ const SensorHistory = (props) => {
           </Link>
         ))}
       </div>
+      <br />
+      <Text dir="rtl">
+        انتخاب تاریخ دلخواه:
+      </Text>
+      <div style={{ margin: '10px' }}>
+
+        <DatePicker onSelect={(e) => setSelectedTime(e.unix())} />
+        <br />
+        <Button onClick={() => window.open(historyUrl(Math.round(selectedTime)), "_blank")} style={{ backgroundColor: '#282c34', color: 'white', margin: "10px", width: "150px", height: "40px" }}>
+          دریافت
+        </Button>
+      </div>
+      <div style={{
+        height: '100px',
+        backgroundColor: "#282c34",
+        marginTop: '20px',
+        paddingTop: "10px",
+        paddingRight: "10px",
+        paddingBottom: "2px",
+        textAlign: "center"
+      }}>
+        <Text style={{ color: "white", fontSize: "16px" }} dir="rtl">
+          ارتباط با دفتر آب و هوا: 021000000
+          <br></br>
+          ایمیل: weather_monit@basu.ac.ir
+        </Text>
+        <br></br>
+        <Text style={{ color: "white", fontSize: "10px" }} dir="rtl">
+          توسعه توسط واحد IT دانشگاه بوعلی سینا
+        </Text>
+      </div>    
     </div>
   );
 };
@@ -154,7 +191,7 @@ function App() {
     });
     if (!res) return;
     setSensor(res);
-    setChart(res)
+    setChart(res[0])
   };
 
   useEffect(() => {
@@ -173,12 +210,12 @@ function App() {
 
 
   function setChart(rawData) {
-    let labels = Object.keys(rawData[0].Data).slice(Object.keys(rawData[0].Data).length - 30)
+    let labels = Object.keys(rawData.Data).slice(Object.keys(rawData.Data).length - 30)
     setChartLabels(labels)
   
     let totalFeatures = []
-    Object.keys(rawData[0].Data).forEach(k => {
-      rawData[0].Data[k].forEach(f => {
+    Object.keys(rawData.Data).forEach(k => {
+      rawData.Data[k].forEach(f => {
         if (totalFeatures.find(x => x == f.feature) == null) {
           totalFeatures.push(f.feature)
         }
@@ -188,8 +225,8 @@ function App() {
     let featureData = []
     totalFeatures.forEach(feature => {
       let pointData = []
-      Object.keys(rawData[0].Data).slice(Object.keys(rawData[0].Data).length - 30).forEach(k => {
-          let fdata = rawData[0].Data[k].find(f => f.feature == feature)
+      Object.keys(rawData.Data).slice(Object.keys(rawData.Data).length - 30).forEach(k => {
+        let fdata = rawData.Data[k].find(f => f.feature == feature)
           if (fdata == undefined)
             return pointData.push(0)
 
@@ -268,8 +305,13 @@ function App() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {sensor.map((x) => (
-              <MarkerSpot key={x.Lat + x.Long} {...x} />
+            {
+              sensor.map((x) => (
+                <MarkerSpot key={x.Lat + x.Long}  {...x} onClick={(p) => {
+                  console.log(p)
+                  setChart(p)
+                  //console.log(data)
+                }} />
             ))}
           </MapContainer>
         </div>
