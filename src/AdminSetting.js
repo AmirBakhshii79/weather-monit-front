@@ -120,12 +120,19 @@ function AdminSetting() {
       <List.Item>
       {item.feature} 
       <Checkbox defaultChecked={item.enabled}
+            style={{ marginLeft: '10px' }}
       onChange={(e) => {
         let d = settings.features.findIndex(x => x.feature == item.feature)
         settings.features[d].enabled = e.target.checked
         setSettings(settings)
       }}
       />
+          <Input placeholder='محدوده خطر' onChange={(e) => {
+            let d = settings.features.findIndex(x => x.feature == item.feature)
+            settings.features[d].threshold = parseFloat(e.target.value)
+            setSettings(settings)
+          }} defaultValue={item.threshold.toString()}>
+          </Input>
       </List.Item>
       }
       style={{margin:"20px"}}

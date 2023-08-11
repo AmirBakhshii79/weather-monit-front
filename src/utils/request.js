@@ -1,4 +1,4 @@
-export const baseUrl = "http://95.217.55.151:1323";
+export const baseUrl = "http://weathermonit.ddns.net/api";
 
 const globalHeaders = {
   "content-type": "application/json",
