@@ -55,8 +55,8 @@ function AdminSetting() {
       }}
     >
       <Text style={{ color: "white" }}>
-        سیستم اطلاعات آب و هوا دانشاشگاه بوعلی سینا
-      </Text>
+              شاخص های کیفیت هوای شهر همدان
+            </Text>
       <div className="logo" style={{ height: "50px" }}>
         <img
           style={{ height: "50px" }}
@@ -127,13 +127,16 @@ function AdminSetting() {
         setSettings(settings)
       }}
       />
-          <Input placeholder='محدوده خطر' onChange={(e) => {
+          <div style={{ display: 'flex', padding: '3px' }} dir='rtl' >
+            <Text style={{ margin: '2px' }}>محدوده خطر:</Text>
+            <Input style={{ width: '70%' }} type='number' step='0.0001' placeholder='محدوده خطر' onChange={(e) => {
             let d = settings.features.findIndex(x => x.feature == item.feature)
             settings.features[d].threshold = parseFloat(e.target.value)
             setSettings(settings)
-          }} defaultValue={item.threshold.toString()}>
+            }} defaultValue={item.threshold.toString()}>
           </Input>
-      </List.Item>
+          </div>
+        </List.Item>
       }
       style={{margin:"20px"}}
     />

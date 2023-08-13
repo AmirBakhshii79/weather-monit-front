@@ -48,8 +48,8 @@ function Login() {
           }}
         >
           <Text style={{ color: "white" }}>
-            سیستم اطلاعات آب و هوا دانشگاه بوعلی سینا
-          </Text>
+              شاخص های کیفیت هوای شهر همدان
+            </Text>
           <div className="logo" style={{ height: "50px" }}>
             <img
               style={{ height: "50px" }}

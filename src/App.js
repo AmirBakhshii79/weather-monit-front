@@ -283,7 +283,7 @@ function App() {
         >
           <Button onClick={doLogin}>ورود به سیستم</Button>
           <Text style={{ color: "white" }}>
-            سیستم اطلاعات آب و هوا دانشگاه بوعلی سینا
+            شاخص های کیفیت هوای شهر همدان
           </Text>
           <div className="logo" style={{ height: "50px" }}>
             <img
